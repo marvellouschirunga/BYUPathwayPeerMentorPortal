@@ -1,0 +1,72 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+*.env
+*.venv
+
+# Django-related files
+*.sqlite3
+db.sqlite3
+*.log
+local_settings.py
+.env
+.env.*.local
+instance/
+
+# Media/Static files
+media/
+staticfiles/
+static/
+
+# Testing
+.coverage
+*.cover
+*.pytest_cache
+test_reports/
+nosetests.xml
+coverage.xml
+*.mo
+*.pot
+*.log
+
+# Node.js dependencies (if used)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+
+# VS Code / IDE settings
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# Backup / Temporary files
+*.bak
+*.swp
+*.tmp
+*.old
+~*
+
+# Compiled CSS (if using tools like Sass)
+*.css.map
+*.scssc
+
+# PyCharm
+*.idea/
+
+# Pipenv
+Pipfile.lock
+
+
+# Secrets
+secrets.json
