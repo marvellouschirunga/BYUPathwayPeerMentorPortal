@@ -63,6 +63,17 @@ a {
   text-decoration: none;
 }
 
+.auth__logo-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.auth__logo {
+  width: 100px;
+  height: auto;
+}
+
 /*========== components ==========*/
 .container {
   max-width: 120rem;
@@ -161,79 +172,55 @@ a {
 }
 
 .avatar {
-  position: relative;
+  position: relative; /* Ensures positioning context */
   display: inline-block;
   border-radius: 50%;
-  border: 2px solid #f1c300;
+  border: 2px solid #f1c300; /* Orange border */
+  width: 50px; /* Fixed width */
+  height: 50px; /* Fixed height */
 }
 
 .avatar img {
-  display: block;
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: center;
+  border-radius: 50%;
 }
 
-.avatar::after {
-  content: "";
-  display: block;
+.avatar--medium {
+  width: 50px; 
+  height: 50px; 
+  position: relative; /* Keeps the status indicator positioned correctly */
+}
+
+
+/* Online Indicator */
+.avatar--online::after,
+.avatar--offline::after {
+  content: '';
   position: absolute;
-  background-color: var(--color-gray);
-  z-index: 111;
+  bottom: 0px; /* Adjust position */
+  right: 0px;
+  width: 12px; /* Size of the dot */
+  height: 12px;
+  background-color: #28a745; /* Green for online */
+  border: 2px solid #fff; /* White border around the dot */
   border-radius: 50%;
-  border: 0.3rem solid var(--color-dark);
+  z-index: 5; /* Ensures dot is above everything */
 }
 
-.avatar.active::after {
-  background-color: var(--color-success);
+.avatar--offline::after {
+  background-color: #6c757d; /* Gray for offline */
 }
 
-.avatar.avatar--small img {
-  width: 2.8rem;
-  height: 2.8rem;
-}
 
-.avatar.avatar--small:after {
-  width: 0.7rem;
-  height: 0.7rem;
-  bottom: 0px;
-  right: -6px;
-}
 
-.avatar.avatar--medium img {
-  width: 3.6rem;
-  height: 3.6rem;
-  border-radius: 50%;
-}
 
-.avatar.avatar--medium:after {
-  width: 0.7rem;
-  height: 0.7rem;
-  bottom: 0px;
-  right: -6px;
-}
 
-.avatar.avatar--large img {
-  display: block;
-  width: 8rem;
-  height: 8rem;
-  border-radius: 50%;
-}
 
-.avatar.avatar--large:after {
-  width: 1rem;
-  height: 1rem;
-  bottom: 2px;
-  right: 3.5px;
-}
 
-.avatar--online {
-  border: 2px solid green;
-}
 
-.avatar--offline {
-  border: 2px solid gray;
-}
+
 
 .scroll::-webkit-scrollbar {
   width: 0.6rem;
@@ -390,9 +377,6 @@ a {
   color: rgb(34 33 36);
 }
 
-.header__menu img {
-  height: 3.6rem;
-}
 
 .header__menu p {
   line-height: 1.2;
@@ -459,18 +443,25 @@ a {
 /*========== Layout Box ==========*/
 
 .layout__box {
-  width: 90%;
-  max-width: 48rem;
-  min-height: 40rem;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -46%);
+  width: 100%;
+  max-width: 40rem; /* Reduce the max width for a smaller form */
+  margin: 5rem auto; /* Center the box with top margin */
+  position: relative; /* Change from absolute to relative positioning */
   background-color: var(--color-dark);
   border-radius: 1rem;
-  box-shadow: 1px 1px 6px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Softer shadow */
+  padding: 2rem 3rem; /* Add padding for internal spacing */
   overflow: hidden;
 }
+
+@media screen and (max-width: 768px) {
+  .layout__box {
+    margin: 2rem auto; /* Adjust spacing for mobile screens */
+    padding: 1.5rem 2rem; /* Smaller padding */
+    max-width: 90%; /* Full width with a slight margin */
+  }
+}
+
 
 .layout__boxHeader {
   display: flex;

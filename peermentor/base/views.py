@@ -7,6 +7,8 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from .models import Room, Topic, Message, User
 from .forms import RoomForm, UserForm, MyUserCreationForm
+from django.utils import timezone
+
 
 # Imports for email verification
 from django.template.loader import render_to_string
@@ -30,19 +32,16 @@ def loginPage(request):
     if request.method == 'POST':
         email = request.POST.get('email').lower()
         password = request.POST.get('password')
-
-        try:
-            user = User.objects.get(email=email)
-        except:
-            messages.error(request, 'User does not exist')
-
+        
         user = authenticate(request, email=email, password=password)
-
         if user is not None:
+            user.is_online = True  # Mark user as online
+            user.last_login = timezone.now()
+            user.save()
             login(request, user)
             return redirect('home')
         else:
-            messages.error(request, 'Username or password does not exist')
+            messages.error(request, 'Username or password is incorrect.')
 
     context = {'page': page}
     return render(request, 'base/login_register.html', context)
@@ -50,6 +49,10 @@ def loginPage(request):
 
 def logoutUser(request):
     #Logs the user out and redirects to the homepage.
+    user = request.user
+    if user.is_authenticated:
+        user.is_online = False  # Mark user as offline
+        user.save()
     logout(request)
     return redirect('home')
 
@@ -133,9 +136,11 @@ def home(request):
 def room(request, pk):
     """Displays a single room's details, messages, and participants."""
     room = Room.objects.get(id=pk)
-    room_messages = room.message_set.all()
+    # Optimize the query to include user data efficiently
+    room_messages = room.message_set.select_related('user').all()
     participants = room.participants.all()
 
+    # Handle POST request for creating a message
     if request.method == 'POST':
         message = Message.objects.create(
             user=request.user,
@@ -143,10 +148,14 @@ def room(request, pk):
             body=request.POST.get('body')
         )
         room.participants.add(request.user)
+        request.user.is_online = True  # Update the user's online status
+        request.user.save(update_fields=['is_online'])  # Save the change
         return redirect('room', pk=room.id)
 
+    # Render the template with the updated context
     context = {'room': room, 'room_messages': room_messages, 'participants': participants}
     return render(request, 'base/room.html', context)
+
 
 
 def userProfile(request, pk):
