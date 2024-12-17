@@ -18,6 +18,7 @@ class User(AbstractUser):
     # status = models.CharField(max_length=100, choices=STATUS, default='PM')
     # bloom_id = models.PositiveIntegerField
     bio = models.TextField(null=True)
+    is_online = models.BooleanField(default=False)  # New field to track online status
 
     avatar = models.ImageField(null=True, default="avatar.svg" )
 

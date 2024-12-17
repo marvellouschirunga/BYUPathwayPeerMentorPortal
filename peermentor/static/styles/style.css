@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
 
 :root {
-  --color-main: #ee4520;
+  --color-main: rgb(16 24 40);
   --color-main-light: #e1f6fb;
   --color-dark: #fff;
   --color-dark-medium: #fff;
@@ -58,7 +58,8 @@ img {
 
 a {
   display: inline-block;
-  color: var(--color-main);
+  color: rgb(16 24 40);
+  font-weight: bold;
   text-decoration: none;
 }
 
@@ -95,7 +96,7 @@ a {
 }
 
 .btn--main {
-  background-color: var(--color-main);
+  background-color: rgb(16 24 40);
   color: var(--color-dark);
 }
 
@@ -163,7 +164,7 @@ a {
   position: relative;
   display: inline-block;
   border-radius: 50%;
-  border: 2px solid var(--color-main);
+  border: 2px solid #f1c300;
 }
 
 .avatar img {
@@ -224,6 +225,14 @@ a {
   height: 1rem;
   bottom: 2px;
   right: 3.5px;
+}
+
+.avatar--online {
+  border: 2px solid green;
+}
+
+.avatar--offline {
+  border: 2px solid gray;
 }
 
 .scroll::-webkit-scrollbar {
@@ -471,13 +480,14 @@ a {
 
 .layout__boxTitle {
   display: flex;
-  gap: 1.5rem;
+  gap: 13.5rem;
   align-items: center;
 }
 
 .layout__boxTitle h3 {
-  text-transform: uppercase;
-  font-weight: 500;
+  /* text-transform: uppercase; */
+  /* font-weight: 500; */
+  text-align: center;
   color: var(--color-light);
 }
 
@@ -678,7 +688,7 @@ a {
 .roomList__header h2 {
   text-transform: uppercase;
   font-weight: 700;
-  /*font-size: 32px;*/
+  font-size: 22px;
   color: rgb(16 24 40);
   letter-spacing: 1px;
 }
@@ -747,7 +757,7 @@ a {
 }
 
 .roomListRoom__meta {
-  border-top: 1px solid var(--color-dark-medium);
+  border-top: 3px solid #f1c300;
   padding-top: 1rem;
   display: flex;
   align-items: center;
@@ -771,7 +781,7 @@ a {
 
 .roomListRoom__topic {
   padding: 5px 1.5rem;
-  background-color: #f2f4f7;
+  background-color: #f1c300;
   border-radius: 5rem;
   font-weight: 600;
   font-size: 1.3rem;
@@ -970,6 +980,23 @@ a {
   }
 }
 
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 2.5rem; /* Adjust padding to make space for the icon */
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
 .room__top,
 .participants__top {
   background: var(--color-dark-light);
@@ -1013,7 +1040,7 @@ a {
 }
 
 .room__topRight svg {
-  fill: var(--color-main-light);
+  fill: #ee4520
 }
 
 .room__header {
@@ -1116,7 +1143,7 @@ a {
 }
 
 .thread {
-  border-left: 2px solid var(--color-dark);
+  border-left: 2px solid rgb(102 112 133);
   padding-left: 1rem;
   margin: 2rem 0;
   padding: 2rem;
@@ -1129,7 +1156,7 @@ a {
 }
 
 .thread__top svg {
-  fill: var(--color-dark-light);
+  fill: rgb(102 112 133);
 }
 
 .thread__author {
@@ -1162,11 +1189,11 @@ a {
 
 .room__message > form > input {
   resize: none;
-  background-color: var(--color-dark-light);
-  color: var(--color-light);
-  border: none;
+  background-color: rgb(102 112 133);
+  color: #f2f4f7;
+  border: #060606;
   outline: none;
-  border-radius: 0.7rem;
+  border-radius: 8.7rem;
   height: 4.5rem;
   width: 100%;
   margin-top: -1rem;
@@ -1177,7 +1204,7 @@ a {
 }
 
 .room__message > form > input::placeholder {
-  color: var(--color-light-gray);
+  color: #f2f4f7;
 }
 
 .participants__top span {

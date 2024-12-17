@@ -16,13 +16,7 @@ from django.core.mail import EmailMessage
 
 from .tokens import account_activation_token
 
-# Create your views here.
-
-# rooms = [
-#     {'id': 1, 'name': 'Lets learn python!'},
-#     {'id': 2, 'name': 'Design with me'},
-#     {'id': 3, 'name': 'Frontend developers'},
-# ]
+# Views
 
 def loginPage(request):
     page = 'login'
@@ -44,7 +38,7 @@ def loginPage(request):
             login(request, user)
             return redirect('home')
         else:
-            messages.error(request, 'Username OR password does not exit')
+            messages.error(request, 'Username or password does not exit')
 
     context = {'page': page}
     return render(request, 'base/login_register.html', context)
