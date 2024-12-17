@@ -1,3 +1,4 @@
+# Import necessary Django modules for views, authentication, and model interactions
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
@@ -7,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from .models import Room, Topic, Message, User
 from .forms import RoomForm, UserForm, MyUserCreationForm
 
-#imports for email verification
+# Imports for email verification
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -16,9 +17,12 @@ from django.core.mail import EmailMessage
 
 from .tokens import account_activation_token
 
-# Views
+# -------------------------
+# USER AUTHENTICATION VIEWS
+# -------------------------
 
 def loginPage(request):
+    """Handles user login functionality."""
     page = 'login'
     if request.user.is_authenticated:
         return redirect('home')
@@ -38,42 +42,40 @@ def loginPage(request):
             login(request, user)
             return redirect('home')
         else:
-            messages.error(request, 'Username or password does not exit')
+            messages.error(request, 'Username or password does not exist')
 
     context = {'page': page}
     return render(request, 'base/login_register.html', context)
 
 
 def logoutUser(request):
+    """Logs the user out and redirects to the homepage."""
     logout(request)
     return redirect('home')
 
 
 def registerPage(request):
+    """Handles user registration and email activation link generation."""
     form = MyUserCreationForm()
 
     if request.method == 'POST':
         form = MyUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = False
+            user.is_active = False  # User must activate via email
             user.save()
             activateEmail(request, user, form.cleaned_data.get('email'))
             return redirect('home')
-
         else:
             for error in list(form.errors.values()):
                 messages.error(request, error)
 
-    else:
-        form = MyUserCreationForm()
-    #return redirect('home')
-    return render(request, 'base/login_register.html', {'form': form})
+    context = {'form': form}
+    return render(request, 'base/login_register.html', context)
 
-    #return render(request, 'base/login_register.html', {'form': form})
 
-#Email Activation function
 def activateEmail(request, user, to_email):
+    """Sends an email to the user with an account activation link."""
     mail_subject = 'Activate your PeerMentor.io user account.'
     message = render_to_string('base/template_activate_account.html', {
         'user': user.username,
@@ -84,52 +86,52 @@ def activateEmail(request, user, to_email):
     })
     email = EmailMessage(mail_subject, message, to=[to_email])
     if email.send():
-        messages.success(request, f'Dear <b>{user}</b>, please go to you email <b>{to_email}</b> inbox and click on \
-            received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder too.')
+        messages.success(request, f'Please check your email {to_email} to activate your account.')
     else:
-        messages.error(request, f'Problem sending confirmation email to {to_email}, check if you typed it correctly.')
+        messages.error(request, f'Problem sending email to {to_email}. Please check if the email is correct.')
 
 def activate(request, uidb64, token):
+    """Handles email account activation via the activation link."""
     User = get_user_model()
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
 
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-
-        messages.success(request, 'Thank you for your email confirmation. Now you can login your account.')
+        messages.success(request, 'Your account has been activated successfully. You can now log in.')
         return redirect('loginPage')
     else:
         messages.error(request, 'Activation link is invalid!')
 
-    return redirect('home') 
-...
+    return redirect('home')
+
+# -------------------------
+# CORE APPLICATION VIEWS
+# -------------------------
 
 @login_required(login_url='login')
 def home(request):
-    q = request.GET.get('q') if request.GET.get('q') != None else ''
-
+    """Displays the homepage, allowing users to see all rooms and messages."""
+    q = request.GET.get('q') if request.GET.get('q') else ''
     rooms = Room.objects.filter(
         Q(topic__name__icontains=q) |
         Q(name__icontains=q) |
         Q(description__icontains=q)
     )
-
-    topics = Topic.objects.all()[0:5]
+    topics = Topic.objects.all()[:5]
     room_count = rooms.count()
-    room_messages = Message.objects.filter(
-        Q(room__topic__name__icontains=q))[0:3]
+    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))[:3]
 
-    context = {'rooms': rooms, 'topics': topics,
-               'room_count': room_count, 'room_messages': room_messages}
+    context = {'rooms': rooms, 'topics': topics, 'room_count': room_count, 'room_messages': room_messages}
     return render(request, 'base/home.html', context)
 
 
 def room(request, pk):
+    """Displays a single room's details, messages, and participants."""
     room = Room.objects.get(id=pk)
     room_messages = room.message_set.all()
     participants = room.participants.all()
@@ -143,29 +145,30 @@ def room(request, pk):
         room.participants.add(request.user)
         return redirect('room', pk=room.id)
 
-    context = {'room': room, 'room_messages': room_messages,
-               'participants': participants}
+    context = {'room': room, 'room_messages': room_messages, 'participants': participants}
     return render(request, 'base/room.html', context)
 
 
 def userProfile(request, pk):
+    """Displays the profile of a specific user."""
     user = User.objects.get(id=pk)
     rooms = user.room_set.all()
     room_messages = user.message_set.all()
     topics = Topic.objects.all()
-    context = {'user': user, 'rooms': rooms,
-               'room_messages': room_messages, 'topics': topics}
+
+    context = {'user': user, 'rooms': rooms, 'room_messages': room_messages, 'topics': topics}
     return render(request, 'base/profile.html', context)
 
 
 @login_required(login_url='login')
 def createRoom(request):
+    """Allows authenticated users to create a new chat room."""
     form = RoomForm()
     topics = Topic.objects.all()
+
     if request.method == 'POST':
         topic_name = request.POST.get('topic')
         topic, created = Topic.objects.get_or_create(name=topic_name)
-
         Room.objects.create(
             host=request.user,
             topic=topic,
@@ -180,11 +183,13 @@ def createRoom(request):
 
 @login_required(login_url='login')
 def updateRoom(request, pk):
+    """Allows users to update the details of an existing room."""
     room = Room.objects.get(id=pk)
     form = RoomForm(instance=room)
     topics = Topic.objects.all()
+
     if request.user != room.host:
-        return HttpResponse('Your are not allowed here!!')
+        return HttpResponse('You are not allowed to edit this room.')
 
     if request.method == 'POST':
         topic_name = request.POST.get('topic')
@@ -201,32 +206,37 @@ def updateRoom(request, pk):
 
 @login_required(login_url='login')
 def deleteRoom(request, pk):
+    """Allows users to delete an existing room."""
     room = Room.objects.get(id=pk)
 
     if request.user != room.host:
-        return HttpResponse('Your are not allowed here!!')
+        return HttpResponse('You are not allowed to delete this room.')
 
     if request.method == 'POST':
         room.delete()
         return redirect('home')
+
     return render(request, 'base/delete.html', {'obj': room})
 
 
 @login_required(login_url='login')
 def deleteMessage(request, pk):
+    """Allows users to delete a specific message in a room."""
     message = Message.objects.get(id=pk)
 
     if request.user != message.user:
-        return HttpResponse('Your are not allowed here!!')
+        return HttpResponse('You are not allowed to delete this message.')
 
     if request.method == 'POST':
         message.delete()
         return redirect('home')
+
     return render(request, 'base/delete.html', {'obj': message})
 
 
 @login_required(login_url='login')
 def updateUser(request):
+    """Allows users to update their profile information."""
     user = request.user
     form = UserForm(instance=user)
 
@@ -240,11 +250,13 @@ def updateUser(request):
 
 
 def topicsPage(request):
-    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    """Displays all available discussion topics."""
+    q = request.GET.get('q') if request.GET.get('q') else ''
     topics = Topic.objects.filter(name__icontains=q)
     return render(request, 'base/topics.html', {'topics': topics})
 
 
 def activityPage(request):
+    """Displays recent activity, including new messages and room updates."""
     room_messages = Message.objects.all()
     return render(request, 'base/activity.html', {'room_messages': room_messages})
