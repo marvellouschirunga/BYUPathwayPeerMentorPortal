@@ -22,7 +22,7 @@ from .tokens import account_activation_token
 # -------------------------
 
 def loginPage(request):
-    """Handles user login functionality."""
+    #Handles user login functionality.
     page = 'login'
     if request.user.is_authenticated:
         return redirect('home')
@@ -49,13 +49,13 @@ def loginPage(request):
 
 
 def logoutUser(request):
-    """Logs the user out and redirects to the homepage."""
+    #Logs the user out and redirects to the homepage.
     logout(request)
     return redirect('home')
 
 
 def registerPage(request):
-    """Handles user registration and email activation link generation."""
+    # Handles user registration and email activation link generation.
     form = MyUserCreationForm()
 
     if request.method == 'POST':

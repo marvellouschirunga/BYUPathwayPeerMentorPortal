@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -145,13 +146,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True  
 
-# SMTP Configurations
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_FROM = 'marvellouschirunga@gmail.com'
-EMAIL_HOST_USER = 'marvellouschirunga@gmail.com'
-EMAIL_HOST_PASSWORD = 'mhbehzhjoouhlyun'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+# # SMTP Configurations
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_FROM = 'marvellouschirunga@gmail.com'
+# EMAIL_HOST_USER = 'marvellouschirunga@gmail.com'
+# EMAIL_HOST_PASSWORD = 'mhbehzhjoouhlyun'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
 
-PASSWORD_RESET_TIMEOUT = 14400
+# PASSWORD_RESET_TIMEOUT = 14400
+
+
+
+# Replace hardcoded values with environment variables
+SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG', default=False, cast=bool)
+
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
